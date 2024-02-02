@@ -1,0 +1,85 @@
+{% extends 'app1/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-12 col-sm-12"><center><h1>Cart items</h1></center></div>
+    </div>
+</div>
+<hr>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Product name</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Total Prize</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in Cartitems %}
+                    <tr>
+                        <td>{{ i.menu.name }}</td>
+                        <td><img src="{{ i.menu.image.url }}" class="img-fluid rounded-start" style="height: 100px; width:100px;" alt="..."></td>
+                        <td>{{ i.quantity }}</td>
+                        <td>{{ i.menu.price }}</td>
+                        <td>{{ i.prize }}</td>  
+                        <td>
+                            <a href="{% url 'cartremove' i.id %}" class="btn btn-danger" role="button">Delete</a>
+                        </td>                
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-striped">
+                <tr>
+                    <th><br><center><h1>Grand total={{total_prize}}</h1></center></th>
+                    <th>
+                        <button class="btn btn-primary" onclick="makePayment()">Pay</button>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+<script>
+    let total_prize = "{{ total_prize }}";
+    let card_id="{{items.id}}"
+
+    function makePayment() {
+        FlutterwaveCheckout({
+            public_key: "FLWPUBK_TEST-0bf440d3ed8fe8f2b6016add0ff18aa0-X",
+            tx_ref: "titanic-48981487343MDI0NzMx",
+            amount: total_prize,
+            currency: "INR",
+            payment_options: "card, mobilemoneyghana, ussd",
+            redirect_url: "http://127.0.0.1:8000/paymentsucces"+card_id,
+            meta: {
+                consumer_id: 23,
+                consumer_mac: "92a3-912ba-1192a",
+            },
+            customer: {
+                email: "vigneshayanar@gmail.com",
+                phone_number: "8056268154",
+                name: "vignesh",
+            },
+            customizations: {
+                title: "Tomato",
+                description: "Payment for an awesome cruise",
+                logo: "https://www.logolynx.com/images/logolynx/22/2239ca38f5505fbfce7e55bbc0604386.jpeg",
+            },
+        });
+    }
+</script>
+
+    
+{% endblock %}
+  
